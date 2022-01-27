@@ -1,0 +1,121 @@
+<?php
+
+$connection = mysqli_connect('localhost', 'test', 'password', 'niharika');
+if (isset($_POST['register'])) {
+  $fname = $_POST['firstname'];
+  $lname = $_POST['lastname'];
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+  $phone = $_POST['phone'];
+
+  if ($connection->connect_error) {
+    die('connection error' . $connection->connect_error);
+  }
+
+  if (empty($fname) || empty($lname) || empty($email) || empty($password) || empty($phone)) {
+    echo 'Empty inputs';
+  } else {
+    $stmt = $connection->prepare("INSERT INTO test_niharika (fname,lname,email,pwd,phone) VALUES(?,?,?,?,?)");
+    $stmt->bind_param("sssss", $fname, $lname, $email, $password, $phone);
+    $stmt->execute();
+    $stmt->close();
+  }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>login</title>
+</head>
+
+<body>
+
+  <form id="form" action="index.php" method="POST">
+    <div>
+      <p id="err-fname" style="color: red; font-size: smaller"></p>
+      <label for="firstname" name="firstname" type="text">firstname</label>
+      <input id="fname" name="firstname" type="text" />
+    </div>
+    <div>
+      <p id="err-lname" style="color: red; font-size: smaller"></p>
+      <label for="lastname" name="lastname" type="text">lastname</label>
+      <input id="lname" name="lastname" type="text" />
+    </div>
+    <div>
+      <p id="err-email" style="color: red; font-size: smaller"></p>
+      <label for="email" name="email" type="text">email</label>
+      <input id="email" name="email" type="text" />
+    </div>
+    <div>
+      <p id="err-pw" style="color: red; font-size: smaller"></p>
+      <label for="password" name="password" type="text">password</label>
+      <input id="password" name="password" type="password" />
+    </div>
+    <div>
+      <p id="err-phone" style="color: red; font-size: smaller"></p>
+      <label for="phone" name="phone" type="text">phone</label>
+      <input id="phone" name="phone" type="number" minlength="10" maxlength="10" />
+    </div>
+    <button id="bu" type="submit" name="register">register</button>
+  </form>
+  <script>
+    const fname = document.getElementById("fname");
+    const lname = document.getElementById("lname");
+    const email = document.getElementById("email");
+    const pw = document.getElementById("password");
+    const phone = document.getElementById("phone");
+    const form = document.getElementById("form");
+
+    const errFname = document.getElementById("err-fname");
+    const errLname = document.getElementById("err-lname");
+    const errEmail = document.getElementById("err-email");
+    const errPw = document.getElementById("err-pw");
+    const errPhone = document.getElementById("err-phone");
+    let errors = false;
+
+    form.addEventListener("submit", (e) => {
+      if (!fname.value) {
+        errFname.innerHTML = "Enter first name";
+        errors = true;
+      }
+      if (!lname.value) {
+        errLname.innerHTML = "Enter last name";
+        errors = true;
+      }
+      if (!email.value) {
+        errEmail.innerHTML = "Enter email";
+        errors = true;
+      } else {
+        if (!(email.value.includes("@") && email.value.includes("."))) {
+          errEmail.innerHTML = "Enter valid email";
+          errors = true;
+        }
+      }
+      if (!pw.value) {
+        errPw.innerHTML = "Enter password";
+        errors = true;
+      }
+      if (!phone.value) {
+        errPhone.innerHTML = "Enter phone number";
+        errors = true;
+      } else {
+        if (!(phone.value.length === 10)) {
+          errPhone.innerHTML = "Enter valid phone number";
+          errors = true;
+        }
+      }
+      if (errors === true) {
+        e.preventDefault();
+      } else {
+        alert("Registration successful");
+      }
+    });
+  </script>
+</body>
+
+</html>
